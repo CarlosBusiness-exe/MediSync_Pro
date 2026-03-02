@@ -13,4 +13,4 @@ class Settings(BaseSettings):
         case_sensitive=True
     )
 
-settign: Settings = Settings()
+settings: Settings = Settings()
