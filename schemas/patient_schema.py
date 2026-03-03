@@ -1,6 +1,8 @@
-from typing import Optional
+from typing import Optional, List
 
 from sqlmodel import SQLModel, Field
+
+from schemas.appointment_schema import AppointmentSchemaResponse
 
 class PatientSchemaBase(SQLModel):
     name: str
@@ -14,3 +16,6 @@ class PatientSchemaBase(SQLModel):
 
 class PatientSchemaResponse(PatientSchemaBase):
     id: int
+
+class PatientSchemasAppointments(PatientSchemaResponse):
+    appointments: List[AppointmentSchemaResponse] = []
