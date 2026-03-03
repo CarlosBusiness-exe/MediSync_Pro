@@ -1,4 +1,8 @@
+from typing import List
+
 from sqlmodel import SQLModel, Field
+
+from schemas.appointment_schema import AppointmentSchemaResponse
 
 class DoctorSchemaBase(SQLModel):
     name: str
@@ -9,3 +13,6 @@ class DoctorSchemaBase(SQLModel):
 
 class DoctorSchemaResponse(DoctorSchemaBase):
     id: int
+
+class DoctorSchemaAppointments(DoctorSchemaResponse):
+    appointments: List[AppointmentSchemaResponse] = []
