@@ -11,7 +11,7 @@ def test_pt_schema_valid():
         "age":22,
         "document_id":"963100162",
         "gender":"male",
-        "mail":"josh@gmail.com",
+        "email":"josh@gmail.com",
         "phone":"+13055331058",
         "historical":"Diabetic",
         "address":"Bourbon Street, 600, New Orleans, LA, 70130"
@@ -29,7 +29,7 @@ def test_pt_invalid_types():
         "age":"22",
         "document_id":963100162,
         "gender":"male",
-        "mail":"josh@gmail.com",
+        "email":"josh@gmail.com",
         "phone":13055331058,
         "historical":"Diabetic",
         "address":"Bourbon Street, 600, New Orleans, LA, 70130"
@@ -42,7 +42,7 @@ def test_pt_missing_data():
     data = {
         "document_id":"963100162",
         "gender":"male",
-        "mail":"josh@gmail.com",
+        "email":"josh@gmail.com",
         "phone":"+13055331058",
         "historical":"Diabetic",
         "address":"Bourbon Street, 600, New Orleans, LA, 70130"
@@ -58,7 +58,7 @@ def test_pt_schema_response():
         "age":22,
         "document_id":"963100162",
         "gender":"male",
-        "mail":"josh@gmail.com",
+        "email":"josh@gmail.com",
         "phone":"+13055331058",
         "historical":"Diabetic",
         "address":"Bourbon Street, 600, New Orleans, LA, 70130"
@@ -75,7 +75,7 @@ def test_pt_ap_list():
         "age":22,
         "document_id":"963100162",
         "gender":"male",
-        "mail":"josh@gmail.com",
+        "email":"josh@gmail.com",
         "phone":"+13055331058",
         "historical":"Diabetic",
         "address":"Bourbon Street, 600, New Orleans, LA, 70130",

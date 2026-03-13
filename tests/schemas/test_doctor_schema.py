@@ -10,7 +10,7 @@ def test_dt_schema_valid():
         "name":"Carl",
         "crm":"017199",
         "specialty":"cardiologist",
-        "mail":"carl@gmail.com",
+        "email":"carl@gmail.com",
         "phone":"+13055335289"
     }
 
@@ -25,7 +25,7 @@ def test_dt_invalid_types():
         "name":9,
         "crm":"017199",
         "specialty":"cardiologist",
-        "mail":"carl@gmail.com",
+        "email":"carl@gmail.com",
         "phone":13055335289
     }
 
@@ -35,7 +35,7 @@ def test_dt_invalid_types():
 def test_dt_missing_data():
     data = {
         "name":"Carl",
-        "mail":"carl@gmail.com",
+        "email":"carl@gmail.com",
         "phone":"+13055335289"
     }
 
@@ -48,7 +48,7 @@ def test_dt_schema_response():
         "name":"Carl",
         "crm":"017199",
         "specialty":"cardiologist",
-        "mail":"carl@gmail.com",
+        "email":"carl@gmail.com",
         "phone":"+13055335289"
     }
 
@@ -62,7 +62,7 @@ def test_dt_ap_list():
         "name":"Carl",
         "crm":"017199",
         "specialty":"cardiologist",
-        "mail":"carl@gmail.com",
+        "email":"carl@gmail.com",
         "phone":"+13055335289",
         "appointments":[
             {

@@ -5,20 +5,20 @@ from schemas.user_schema import UserSchemaBase, UserSchemaCreate, UserSchemaResp
 def test_user_schema_valid():
     data = {
         "name": "Carl",
-        "mail": "carl@gmail.com",
+        "email": "carl@gmail.com",
         "is_admin": True
     }
     
     user = UserSchemaBase(**data)
     
     assert user.name == "Carl"
-    assert user.mail == "carl@gmail.com"
+    assert user.email == "carl@gmail.com"
     assert user.is_admin is True
 
 def test_user_schema_create_valid():
     data = {
         "name": "Carl",
-        "mail": "carl@gmail.com",
+        "email": "carl@gmail.com",
         "is_admin": False,
         "password": "strongpassword123"
     }
@@ -31,7 +31,7 @@ def test_user_schema_create_valid():
 def test_user_invalid_types():
     data = {
         "name": "Carl",
-        "mail": "carl@gmail.com",
+        "email": "carl@gmail.com",
         "is_admin": "not-a-boolean" 
     }
     
@@ -50,7 +50,7 @@ def test_user_schema_response():
     data = {
         "id": 1,
         "name": "Carl",
-        "mail": "carl@gmail.com",
+        "email": "carl@gmail.com",
         "is_admin": True
     }
     
