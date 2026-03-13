@@ -33,7 +33,12 @@ def test_create_doctor_success(client, session):
     assert doctor_in_db.crm == payload["crm"]
 
 def test_create_doctor_missing(client, session):
-    payload = {"name": "Carl"}
+    payload = {
+        "name":"Carl",
+        "specialty":"cardiologist",
+        "email":"carl@gmail.com",
+        "phone":"+13055335289"
+    }
 
     response = client.post(f"{settings.API_V1_STR}/doctors/", json=payload)
     data = response.json()
