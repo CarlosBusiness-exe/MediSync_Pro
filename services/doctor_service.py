@@ -10,7 +10,7 @@ class DoctorService:
         query = select(DoctorModel).where(DoctorModel.crm == doctor_data.crm)
         doctor_up = db.exec(query).first()
         if doctor_up:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Already exist a doctor with this CRM.")
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Already exist a doctor with this CRM.")
 
         new_doctor = DoctorModel(**doctor_data.model_dump())
         db.add(new_doctor)
