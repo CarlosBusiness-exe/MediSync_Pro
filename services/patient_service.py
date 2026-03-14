@@ -10,7 +10,7 @@ class PatientService:
         query = select(PatientModel).where(PatientModel.document_id == patient_data.document_id)
         patient_up = db.exec(query).first()
         if patient_up:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Already exist a patient with this document id.")
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Already exist a patient with this document id.")
         
         new_patient = PatientModel(**patient_data.model_dump())
         db.add(new_patient)
