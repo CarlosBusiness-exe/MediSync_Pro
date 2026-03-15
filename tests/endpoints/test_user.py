@@ -63,7 +63,7 @@ def test_get_logged_user(client, user_token, created_user):
     assert response.status_code == 200
     assert response.json()["id"] == created_user["id"]
 
-def test_update_user_with_password(client, created_user):
+def test_update_user_with_password(client, created_user, user_token):
     user_id = created_user["id"]
     update_data = {
         "name": "Carl Updated",
@@ -71,14 +71,14 @@ def test_update_user_with_password(client, created_user):
         "password": "newsecurepassword",
         "is_admin": True
     }
-    response = client.put(f"{settings.API_V1_STR}/users/{user_id}", json=update_data)
+    response = client.put(f"{settings.API_V1_STR}/users/{user_id}", json=update_data, headers ={"Authorization": f"Bearer {user_token}"})
     
     assert response.status_code == 200
     assert response.json()["name"] == "Carl Updated"
 
-def test_delete_user_success(client, session, created_user):
+def test_delete_user_success(client, session, created_user, user_token):
     user_id = created_user["id"]
-    response = client.delete(f"{settings.API_V1_STR}/users/{user_id}")
+    response = client.delete(f"{settings.API_V1_STR}/users/{user_id}", headers ={"Authorization": f"Bearer {user_token}"})
     
     assert response.status_code == 204
     

@@ -5,7 +5,30 @@ from sqlmodel import select
 from core.configs import settings
 from models.doctor_model import DoctorModel
 
-def test_create_doctor_success(client, session):
+@pytest.fixture
+def user_data():
+    return {
+        "name": "Carl",
+        "email": "carl.dev@example.com",
+        "password": "strongpassword123",
+        "is_admin": True
+    }
+
+@pytest.fixture
+def created_user(client, user_data):
+    response = client.post(f"{settings.API_V1_STR}/users/signup", json=user_data)
+    return response.json()
+
+@pytest.fixture
+def user_token(client, user_data, created_user):
+    login_payload = {
+        "username": user_data["email"],
+        "password": user_data["password"]
+    }
+    response = client.post(f"{settings.API_V1_STR}/users/login", data=login_payload)
+    return response.json()["access_token"]
+
+def test_create_doctor_success(client, session, user_token):
     payload = {
         "name":"Carl",
         "crm":"017199/GO",
@@ -14,7 +37,7 @@ def test_create_doctor_success(client, session):
         "phone":"+13055335289"
     }
 
-    response = client.post(f"{settings.API_V1_STR}/doctors/", json=payload)
+    response = client.post(f"{settings.API_V1_STR}/doctors/", json=payload, headers ={"Authorization": f"Bearer {user_token}"})
     data = response.json()
 
     assert response.status_code == 201
@@ -32,7 +55,7 @@ def test_create_doctor_success(client, session):
     assert doctor_in_db.name == payload["name"]
     assert doctor_in_db.crm == payload["crm"]
 
-def test_create_doctor_missing(client, session):
+def test_create_doctor_missing(client, session, user_token):
     payload = {
         "name":"Carl",
         "specialty":"cardiologist",
@@ -40,7 +63,7 @@ def test_create_doctor_missing(client, session):
         "phone":"+13055335289"
     }
 
-    response = client.post(f"{settings.API_V1_STR}/doctors/", json=payload)
+    response = client.post(f"{settings.API_V1_STR}/doctors/", json=payload, headers ={"Authorization": f"Bearer {user_token}"})
     data = response.json()
 
     assert response.status_code == 422
@@ -49,7 +72,7 @@ def test_create_doctor_missing(client, session):
     doctor_in_db = session.exec(query).first()
     assert doctor_in_db is None
 
-def test_create_doctor_invalid(client, session):
+def test_create_doctor_invalid(client, session, user_token):
     payload = {
         "name":7,
         "crm":"017199/GO",
@@ -58,7 +81,7 @@ def test_create_doctor_invalid(client, session):
         "phone":"+13055335289"
     }
 
-    response = client.post(f"{settings.API_V1_STR}/doctors/", json=payload)
+    response = client.post(f"{settings.API_V1_STR}/doctors/", json=payload, headers ={"Authorization": f"Bearer {user_token}"})
     data = response.json()
 
     assert response.status_code == 422
@@ -67,7 +90,7 @@ def test_create_doctor_invalid(client, session):
     doctor_in_db = session.exec(query).first()
     assert doctor_in_db is None
 
-def test_create_doctor_duplicate_crm(client, session):
+def test_create_doctor_duplicate_crm(client, session, user_token):
     doctor1 = {
         "name":"Carl",
         "crm":"017199/GO",
@@ -76,7 +99,7 @@ def test_create_doctor_duplicate_crm(client, session):
         "phone":"+13055335289"
     }
 
-    dt1_response = client.post(f"{settings.API_V1_STR}/doctors/", json=doctor1)
+    dt1_response = client.post(f"{settings.API_V1_STR}/doctors/", json=doctor1, headers ={"Authorization": f"Bearer {user_token}"})
     assert dt1_response.status_code == 201
 
     doctor2 = {
@@ -87,7 +110,7 @@ def test_create_doctor_duplicate_crm(client, session):
         "phone":"+13052335289"
     }
 
-    dt2_response = client.post("api/v1/doctors/", json=doctor2)
+    dt2_response = client.post("api/v1/doctors/", json=doctor2, headers ={"Authorization": f"Bearer {user_token}"})
 
     assert dt2_response.status_code == 409
     assert dt2_response.json()["detail"] == "Already exist a doctor with this CRM."
@@ -100,13 +123,13 @@ def test_create_doctor_duplicate_crm(client, session):
     assert results[0].email == doctor1["email"]
     assert results[0].name == doctor1["name"]
 
-def test_get_invalid_id(client):
+def test_get_invalid_id(client, user_token):
     invalid_id = 9999
-    response = client.get(f"{settings.API_V1_STR}/doctors/{invalid_id}")
+    response = client.get(f"{settings.API_V1_STR}/doctors/{invalid_id}", headers ={"Authorization": f"Bearer {user_token}"})
     
     assert response.status_code == 404
     assert response.json()["detail"] == "Doctor not found."
-"""
+
 def test_create_without_token(client):
     payload = {
         "name": "Unauthorized Doc",
@@ -118,9 +141,9 @@ def test_create_without_token(client):
     response = client.post("api/v1/doctors/", json=payload)
     
     assert response.status_code == 401
-"""
-def test_get_empty(client):
-    response = client.get(f"{settings.API_V1_STR}/doctors/")
+
+def test_get_empty(client, user_token):
+    response = client.get(f"{settings.API_V1_STR}/doctors/", headers ={"Authorization": f"Bearer {user_token}"})
     
     assert response.status_code == 200
     assert response.json() == []
