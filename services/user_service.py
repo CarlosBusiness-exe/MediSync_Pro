@@ -20,7 +20,7 @@ class UserService:
         if not user:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="The data is incorrect")
         
-        return {"access_token": create_access_token(user.id), "token_type": "bearer"}
+        return {"access_token": create_access_token(user.email), "token_type": "bearer"}
     
     #Create/Signup user
     @staticmethod

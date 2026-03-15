@@ -37,3 +37,7 @@ def get_current_user(token: Annotated[str, Depends(oauth2_schema)], db: Session 
         raise credential_exception
     
     user: UserModel = get_user(db, username=token_data.username)
+    if user is None:
+        raise credential_exception
+    
+    return user

@@ -13,8 +13,8 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 def get_password_hash(password: str):
     return password_hash.hash(password)
 
-def create_access_token(user_id: int, expires_delta: Optional[timedelta] = None):
-    to_encode = {"sub": str(user_id)}
+def create_access_token(email: str, expires_delta: Optional[timedelta] = None):
+    to_encode = {"sub": email}
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
