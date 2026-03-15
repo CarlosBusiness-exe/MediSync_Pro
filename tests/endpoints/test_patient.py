@@ -28,7 +28,11 @@ def user_token(client, user_data, created_user):
     response = client.post(f"{settings.API_V1_STR}/users/login", data=login_payload)
     return response.json()["access_token"]
 
-def test_create_patient_success(client, session, user_token):
+@pytest.fixture
+def auth_headers(user_token):
+    return {"Authorization": f"Bearer {user_token}"}
+
+def test_create_patient_success(client, session, auth_headers):
     payload = {
         "name":"Jhon",
         "age":20,
@@ -40,7 +44,7 @@ def test_create_patient_success(client, session, user_token):
         "address":"Street A"
     }
 
-    response = client.post(f"{settings.API_V1_STR}/patients/", json=payload, headers ={"Authorization": f"Bearer {user_token}"})
+    response = client.post(f"{settings.API_V1_STR}/patients/", json=payload, headers=auth_headers)
     data = response.json()
 
     assert response.status_code == 201
@@ -57,7 +61,7 @@ def test_create_patient_success(client, session, user_token):
     assert patient_in_db is not None
     assert patient_in_db.name == payload["name"]
 
-def test_create_patient_missing(client, session, user_token):
+def test_create_patient_missing(client, session, auth_headers):
     payload = {
         "age":20,
         "gender":"male",
@@ -66,7 +70,7 @@ def test_create_patient_missing(client, session, user_token):
         "address":"Street A"
     }
     
-    response = client.post(f"{settings.API_V1_STR}/patients/", json=payload, headers ={"Authorization": f"Bearer {user_token}"})
+    response = client.post(f"{settings.API_V1_STR}/patients/", json=payload, headers=auth_headers)
     data = response.json()
 
     assert response.status_code == 422
@@ -75,7 +79,7 @@ def test_create_patient_missing(client, session, user_token):
     patient_in_db = session.exec(query).first()
     assert patient_in_db is None
 
-def test_create_patient_invalid(client, session, user_token):
+def test_create_patient_invalid(client, session, auth_headers):
     payload = {
         "name":999,
         "age":"string",
@@ -87,7 +91,7 @@ def test_create_patient_invalid(client, session, user_token):
         "address":"Street A"
     }
 
-    response = client.post(f"{settings.API_V1_STR}/patients/", json=payload, headers ={"Authorization": f"Bearer {user_token}"})
+    response = client.post(f"{settings.API_V1_STR}/patients/", json=payload, headers=auth_headers)
     data = response.json()
 
     assert response.status_code == 422
@@ -96,7 +100,7 @@ def test_create_patient_invalid(client, session, user_token):
     patient_in_db = session.exec(query).first()
     assert patient_in_db is None
 
-def test_create_patient_duplicated_doc(client, session, user_token):
+def test_create_patient_duplicated_doc(client, session, auth_headers):
     patient1 = {
         "name":"Jhon",
         "age":20,
@@ -108,7 +112,7 @@ def test_create_patient_duplicated_doc(client, session, user_token):
         "address":"Street A"
     }
 
-    response_dt1 = client.post(f"{settings.API_V1_STR}/patients/", json=patient1, headers ={"Authorization": f"Bearer {user_token}"})
+    response_dt1 = client.post(f"{settings.API_V1_STR}/patients/", json=patient1, headers=auth_headers)
     assert response_dt1.status_code == 201
 
     patient2 = {
@@ -122,7 +126,7 @@ def test_create_patient_duplicated_doc(client, session, user_token):
         "address":"Street A"
     }
 
-    response_dt2 = client.post(f"{settings.API_V1_STR}/patients/", json=patient2, headers ={"Authorization": f"Bearer {user_token}"})
+    response_dt2 = client.post(f"{settings.API_V1_STR}/patients/", json=patient2, headers=auth_headers)
     assert response_dt2.status_code == 409
     assert response_dt2.json()["detail"] == "Already exist a patient with this document id."
 
@@ -134,9 +138,9 @@ def test_create_patient_duplicated_doc(client, session, user_token):
     assert results[0].email == patient1["email"]
     assert results[0].name == patient1["name"]
 
-def test_get_invalid_id(client, session, user_token):
+def test_get_invalid_id(client, session, auth_headers):
     invalid_id = 9999
-    response = client.get(f"{settings.API_V1_STR}/patients/{invalid_id}", headers ={"Authorization": f"Bearer {user_token}"})
+    response = client.get(f"{settings.API_V1_STR}/patients/{invalid_id}", headers=auth_headers)
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Patient not found."
@@ -156,8 +160,8 @@ def test_create_without_token(client):
     
     assert response.status_code == 401
 
-def test_get_empty(client, user_token):
-    response = client.get(f"{settings.API_V1_STR}/patients/", headers ={"Authorization": f"Bearer {user_token}"})
+def test_get_empty(client, auth_headers):
+    response = client.get(f"{settings.API_V1_STR}/patients/", headers=auth_headers)
 
     assert response.status_code == 200
     assert response.json() == []
