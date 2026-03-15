@@ -31,9 +31,9 @@ def get_user_by_id(user_id: int, db: Session = Depends(get_session)):
     return UserService.get_user_by_id(user_id, db)
 
 @router.put("/{user_id}", response_model=UserSchemaResponse)
-def update_user(user_id: int, user_data: UserSchemaCreate, db: Session = Depends(get_session)):
+def update_user(user_id: int, user_data: UserSchemaCreate, db: Session = Depends(get_session), current_user: UserModel = Depends(get_current_user)):
     return UserService.update_user(user_id, user_data, db)
 
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_user(user_id: int, db: Session = Depends(get_session)):
+def delete_user(user_id: int, db: Session = Depends(get_session), current_user: UserModel = Depends(get_current_user)):
     return UserService.delete_user(user_id, db)
