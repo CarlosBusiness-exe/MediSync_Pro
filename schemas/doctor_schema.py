@@ -11,8 +11,8 @@ class DoctorSchemaBase(SQLModel):
     specialty: str = Field(index=True)
     email: str
     phone: str
-    start_time: time | None = Field(index=True, default=None, nullable=True)
-    end_time: time | None = Field(index=True, default=None, nullable=True)
+    start_time: time = Field(index=True, default=None)
+    end_time: time = Field(index=True, default=None)
 
 class DoctorSchemaResponse(DoctorSchemaBase):
     id: int
