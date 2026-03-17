@@ -59,7 +59,8 @@ def test_create_ap_success(client, session, created_doctor, created_patient, aut
         "ap_time": "13:00:00",
         "doctor_id": created_doctor["id"],
         "patient_id": created_patient["id"],
-        "status": "Pending"
+        "status": "Pending",
+        "is_active":"True"
     }
 
     response = client.post(f"{settings.API_V1_STR}/appointments/", json=appointment, headers=auth_headers)
@@ -94,7 +95,8 @@ def test_create_ap_invalid(client, created_patient, auth_headers):
         "ap_time":"13,00,00",
         "doctor_id":"string",
         "patient_id":created_patient["id"],
-        "status":"Pending"
+        "status":"Pending",
+        "is_active":"True"
     }
 
     response = client.post(f"{settings.API_V1_STR}/appointments/", json=appointment, headers=auth_headers)
@@ -106,7 +108,8 @@ def test_create_ap_same_time(client, created_doctor, created_patient, auth_heade
         "ap_time":"13:00:00",
         "doctor_id": created_doctor["id"],
         "patient_id": created_patient["id"],
-        "status":"Pending"
+        "status":"Pending",
+        "is_active":"True"
     }
 
     response = client.post(f"{settings.API_V1_STR}/appointments/", json=appointment, headers=auth_headers)
@@ -118,7 +121,8 @@ def test_create_ap_same_time(client, created_doctor, created_patient, auth_heade
         "ap_time":"13:00:00",
         "doctor_id": created_doctor["id"],
         "patient_id": created_patient["id"],
-        "status":"Pending"
+        "status":"Pending",
+        "is_active":"True"
     }
 
     st_response = client.post(f"{settings.API_V1_STR}/appointments/", json=same_time_ap, headers=auth_headers)
@@ -140,7 +144,8 @@ def test_create_without_token(client, created_doctor, created_patient):
         "ap_time": "13:00:00",
         "doctor_id": created_doctor["id"],
         "patient_id": created_patient["id"],
-        "status": "Pending"
+        "status": "Pending",
+        "is_active":"True"
     }
     response = client.post("api/v1/doctors/", json=appointment)
     

@@ -8,6 +8,7 @@ class AppointmentSchemaBase(SQLModel):
     doctor_id: int = Field(index=True)
     patient_id: int
     status: str = "Pending"
+    is_active: bool = True
 
 class AppointmentSchemaResponse(AppointmentSchemaBase):
     id: int

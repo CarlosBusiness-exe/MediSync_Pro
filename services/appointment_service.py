@@ -15,7 +15,7 @@ class AppointmentService:
         PatientService.get_patient_by_id(appointment_data.patient_id, db)
 
         #Prevent doble bookings
-        query = select(AppointmentModel).where(AppointmentModel.ap_date == appointment_data.ap_date, AppointmentModel.ap_time == appointment_data.ap_time, (AppointmentModel.doctor_id == appointment_data.doctor_id) | (AppointmentModel.patient_id == appointment_data.patient_id))
+        query = select(AppointmentModel).where(AppointmentModel.ap_date == appointment_data.ap_date, AppointmentModel.ap_time == appointment_data.ap_time, (AppointmentModel.doctor_id == appointment_data.doctor_id) | (AppointmentModel.patient_id == appointment_data.patient_id), AppointmentModel.is_active == True)
         appointment_up = db.exec(query).first()
         if appointment_up:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Doctor or Patient already has an appointment scheduled at this time.")
@@ -60,7 +60,7 @@ class AppointmentService:
     def delete_ap(appointment_id: int, db: Session):
         appointment_up = AppointmentService.get_ap_by_id(appointment_id, db)
 
-        db.delete(appointment_up)
+        appointment_up.is_active = False
         db.commit()
 
         return None
