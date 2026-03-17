@@ -38,7 +38,9 @@ def test_create_doctor_success(client, session, auth_headers):
         "crm":"017199/GO",
         "specialty":"cardiologist",
         "email":"carl@gmail.com",
-        "phone":"+13055335289"
+        "phone":"+13055335289",
+        "start_time": "08:00:00.893Z",
+        "end_time": "17:00:00.893Z"
     }
 
     response = client.post(f"{settings.API_V1_STR}/doctors/", json=payload, headers=auth_headers)
@@ -82,7 +84,9 @@ def test_create_doctor_invalid(client, session, auth_headers):
         "crm":"017199/GO",
         "specialty":10,
         "email":"carl@gmail.com",
-        "phone":"+13055335289"
+        "phone":"+13055335289",
+        "start_time": 8,
+        "end_time": 17
     }
 
     response = client.post(f"{settings.API_V1_STR}/doctors/", json=payload, headers=auth_headers)
@@ -100,7 +104,9 @@ def test_create_doctor_duplicate_crm(client, session, auth_headers):
         "crm":"017199/GO",
         "specialty":"cardiologist",
         "email":"carl@gmail.com",
-        "phone":"+13055335289"
+        "phone":"+13055335289",
+        "start_time": "08:00:00.893Z",
+        "end_time": "17:00:00.893Z"
     }
 
     dt1_response = client.post(f"{settings.API_V1_STR}/doctors/", json=doctor1, headers=auth_headers)
@@ -111,7 +117,9 @@ def test_create_doctor_duplicate_crm(client, session, auth_headers):
         "crm":"017199/GO",
         "specialty":"therapist",
         "email":"thercarl@gmail.com",
-        "phone":"+13052335289"
+        "phone":"+13052335289",
+        "start_time": "08:00:00.893Z",
+        "end_time": "17:00:00.893Z"
     }
 
     dt2_response = client.post("api/v1/doctors/", json=doctor2, headers=auth_headers)

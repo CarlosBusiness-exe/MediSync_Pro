@@ -38,7 +38,8 @@ def auth_headers(user_token):
 def created_doctor(client, auth_headers):
     doctor = {
         "name": "Carl", "crm": "017199/GO", "specialty": "cardiologist",
-        "email": "carl@gmail.com", "phone": "+13055335289"
+        "email": "carl@gmail.com", "phone": "+13055335289", "start_time": "08:00:00.893Z",
+        "end_time": "17:00:00.893Z"
     }
     response = client.post(f"{settings.API_V1_STR}/doctors/", json=doctor, headers=auth_headers)
     return response.json()
