@@ -1,5 +1,5 @@
 from typing import Optional
-from sqlmodel import SQLModel
+from sqlmodel import SQLModel, Field
 from enum import Enum
 
 class UserRole(str, Enum):
@@ -11,7 +11,7 @@ class UserSchemaBase(SQLModel):
     name: str
     email: str
     is_admin: bool
-    role: UserRole
+    role: UserRole | None = Field(default=None, nullable=True)
 
 class UserSchemaCreate(UserSchemaBase):
     password: str
