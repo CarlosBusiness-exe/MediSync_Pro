@@ -6,6 +6,7 @@ from sqlmodel import SQLModel, Field
 from schemas.appointment_schema import AppointmentSchemaResponse
 
 class DoctorSchemaBase(SQLModel):
+    user_id: int
     name: str
     crm: str = Field(unique=True, index=True)
     specialty: str = Field(index=True)

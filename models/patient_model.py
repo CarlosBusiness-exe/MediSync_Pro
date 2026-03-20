@@ -6,10 +6,13 @@ from schemas.patient_schema import PatientSchemaBase
 
 if TYPE_CHECKING:
     from models.appointment_model import AppointmentModel
+    from models.user_model import UserModel
 
 class PatientModel(PatientSchemaBase, table=True):
     __tablename__ = "patients"
 
     id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="users.id")
 
     appointments: List["AppointmentModel"] = Relationship(back_populates="patient")
+    user: Optional["UserModel"] = Relationship(back_populates="patient_profile")
