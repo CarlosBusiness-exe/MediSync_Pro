@@ -12,6 +12,7 @@ from core. authorization import RoleChecker
 router = APIRouter()
 
 allow_admin = RoleChecker([UserRole.ADMIN])
+allow_all = RoleChecker([UserRole.ADMIN, UserRole.DOCTOR, UserRole.PATIENT])
 
 @router.get("/logged", response_model=UserSchemaResponse)
 def get_logged(logged_user: UserModel = Depends(get_current_user)):
@@ -30,12 +31,12 @@ def get_all_users(db: Session = Depends(get_session), current_user: UserModel = 
     return UserService.get_all_users(db)
 
 @router.get("/{user_id}", response_model=UserSchemaResponse)
-def get_user_by_id(user_id: int, db: Session = Depends(get_session), current_user: UserModel = Depends(allow_admin)):
-    return UserService.get_user_by_id(user_id, db)
+def get_user_by_id(user_id: int, db: Session = Depends(get_session), current_user: UserModel = Depends(allow_all)):
+    return UserService.get_user_by_id(user_id, db, current_user)
 
 @router.put("/{user_id}", response_model=UserSchemaResponse)
-def update_user(user_id: int, user_data: UserSchemaCreate, db: Session = Depends(get_session), current_user: UserModel = Depends(allow_admin)):
-    return UserService.update_user(user_id, user_data, db)
+def update_user(user_id: int, user_data: UserSchemaCreate, db: Session = Depends(get_session), current_user: UserModel = Depends(allow_all)):
+    return UserService.update_user(user_id, user_data, db, current_user)
 
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(user_id: int, db: Session = Depends(get_session), current_user: UserModel = Depends(allow_admin)):

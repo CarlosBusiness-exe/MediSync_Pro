@@ -6,7 +6,8 @@ def test_user_schema_valid():
     data = {
         "name": "Carl",
         "email": "carl@gmail.com",
-        "is_admin": True
+        "is_admin": True,
+        "role":"patient"
     }
     
     user = UserSchemaBase(**data)
@@ -14,12 +15,14 @@ def test_user_schema_valid():
     assert user.name == "Carl"
     assert user.email == "carl@gmail.com"
     assert user.is_admin is True
+    assert user.role == "patient"
 
 def test_user_schema_create_valid():
     data = {
         "name": "Carl",
         "email": "carl@gmail.com",
         "is_admin": False,
+        "role":"patient",
         "password": "strongpassword123"
     }
     
@@ -32,7 +35,8 @@ def test_user_invalid_types():
     data = {
         "name": "Carl",
         "email": "carl@gmail.com",
-        "is_admin": "not-a-boolean" 
+        "is_admin": "not-a-boolean",
+        "role":"PATIENT"
     }
     
     with pytest.raises(ValidationError):
@@ -51,7 +55,8 @@ def test_user_schema_response():
         "id": 1,
         "name": "Carl",
         "email": "carl@gmail.com",
-        "is_admin": True
+        "is_admin": True,
+        "role":"patient"
     }
     
     user = UserSchemaResponse(**data)

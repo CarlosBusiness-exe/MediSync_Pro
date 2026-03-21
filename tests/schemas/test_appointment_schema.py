@@ -10,7 +10,8 @@ def test_ap_schema_valid():
         "ap_time":"14:00:00",
         "doctor_id":1,
         "patient_id":1,
-        "status":"Pending"
+        "status":"Pending",
+        "is_active":True
     }
 
     appointment = AppointmentSchemaBase(**data)
@@ -24,7 +25,8 @@ def test_ap_schema_invalid_types():
         "ap_time":"14:00:00",
         "doctor_id":"string",
         "patient_id":1,
-        "status":0
+        "status":0,
+        "is_active":"True"
     }
 
     with pytest.raises(ValidationError):

@@ -7,6 +7,7 @@ from schemas.appointment_schema import AppointmentSchemaResponse
 
 def test_pt_schema_valid():
     data = {
+        "user_id":1,
         "name":"Josh",
         "age":22,
         "document_id":"963100162",
@@ -25,6 +26,7 @@ def test_pt_schema_valid():
 
 def test_pt_invalid_types():
     data = {
+        "user_id":"1",
         "name":"Josh",
         "age":"22",
         "document_id":963100162,
@@ -53,6 +55,7 @@ def test_pt_missing_data():
 
 def test_pt_schema_response():
     data = {
+        "user_id":1,
         "id":1,
         "name":"Josh",
         "age":22,
@@ -70,6 +73,7 @@ def test_pt_schema_response():
 
 def test_pt_ap_list():
     data = {
+        "user_id":1,
         "id":1,
         "name":"Josh",
         "age":22,
@@ -86,7 +90,8 @@ def test_pt_ap_list():
                 "ap_time":"14:00:00",
                 "doctor_id":1,
                 "patient_id":1,
-                "status":"Pending"
+                "status":"Pending",
+                "is_active":True
             },
             {
                 "id":77,
@@ -94,7 +99,8 @@ def test_pt_ap_list():
                 "ap_time":"15:00:00",
                 "doctor_id":1,
                 "patient_id":2,
-                "status":"Pending"
+                "status":"Pending",
+                "is_active":True
             }
         ]
     }
