@@ -6,6 +6,7 @@ from models.user_model import UserModel
 from core.deps import get_current_user
 from core.security import get_password_hash, create_access_token
 from core.auth import authenticate_user
+from core.authorization import UserRole
 from schemas.user_schema import UserSchemaBase, UserSchemaCreate
 
 class UserService:
@@ -48,7 +49,10 @@ class UserService:
         return users
     
     @staticmethod
-    def get_user_by_id(user_id: int, db: Session):
+    def get_user_by_id(user_id: int, db: Session, current_user: UserModel):
+        if current_user.role not in [UserRole.ADMIN]:
+            if current_user.id != user_id:
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You can't access this datas.")
         query = select(UserModel).where(UserModel.id == user_id)
         user = db.exec(query).first()
 
@@ -58,8 +62,11 @@ class UserService:
         return user
     
     @staticmethod
-    def update_user(user_id: int, user_data: UserSchemaCreate, db: Session):
-        user_up = UserService.get_user_by_id(user_id, db)
+    def update_user(user_id: int, user_data: UserSchemaCreate, db: Session, current_user: UserModel):
+        if current_user.role not in [UserRole.ADMIN]:
+            if current_user.id != user_id:
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You can't access this datas.")
+        user_up = UserService.get_user_by_id(user_id, db, current_user)
 
         user_data_dict = user_data.model_dump(exclude_unset=True)
 

@@ -22,15 +22,15 @@ class PatientService:
     
     @staticmethod
     def get_patient_by_id(patient_id: int, db: Session, user: UserModel):
-        if user.role not in [UserRole.ADMIN, UserRole.DOCTOR]:
-            if user.id != patient_id:
-                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You can't access this datas.")
-
         query = select(PatientModel).where(PatientModel.id == patient_id)
         patient = db.exec(query).first()
 
         if not patient:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found.")
+
+        if user.role not in [UserRole.ADMIN, UserRole.DOCTOR]:
+            if user.id != patient.user_id:
+                raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You can't access this datas.")
         
         return patient
     

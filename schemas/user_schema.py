@@ -11,7 +11,7 @@ class UserSchemaBase(SQLModel):
     name: str
     email: str
     is_admin: bool
-    role: UserRole | None = Field(default=None, nullable=True)
+    role: UserRole
 
 class UserSchemaCreate(UserSchemaBase):
     password: str
