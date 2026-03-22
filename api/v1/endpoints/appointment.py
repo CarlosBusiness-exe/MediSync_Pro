@@ -17,25 +17,25 @@ allow_all = RoleChecker([UserRole.ADMIN, UserRole.DOCTOR, UserRole.PATIENT])
 
 @router.post("/", response_model=AppointmentSchemaResponse, status_code=status.HTTP_201_CREATED)
 def create_ap(appointment_data: AppointmentSchemaBase, db: Session = Depends(get_session), current_user: UserModel = Depends(allow_doctor)):
-    return AppointmentService.create_ap(appointment_data, db)
+    return AppointmentService.create_ap(appointment_data, db, current_user)
 
 @router.get("/{appointment_id}", response_model=AppointmentSchemaResponse)
 def get_ap_by_id(appointment_id: int, db: Session = Depends(get_session), current_user: UserModel = Depends(allow_all)):
-    return AppointmentService.get_ap_by_id(appointment_id, db)
+    return AppointmentService.get_ap_by_id(appointment_id, db, current_user)
 
 @router.get("/", response_model=List[AppointmentSchemaResponse])
 def get_all_ap(db: Session = Depends(get_session), current_user: UserModel = Depends(allow_all)):
     AppointmentService.auto_complete_past_appointments(db)
-    return AppointmentService.get_all_ap(db)
+    return AppointmentService.get_all_ap(db, current_user)
 
 @router.put("/{appointment_id}", response_model=AppointmentSchemaResponse)
 def update_ap(appointment_id: int, appointment_data: AppointmentSchemaBase, db: Session = Depends(get_session), current_user: UserModel = Depends(allow_doctor)):
-    return AppointmentService.update_ap(appointment_id, appointment_data, db)
+    return AppointmentService.update_ap(appointment_id, appointment_data, db, current_user)
 
 @router.delete("/{appointment_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_ap(appointment_id: int, db: Session = Depends(get_session), current_user: UserModel = Depends(allow_admin)):
-    return AppointmentService.delete_ap(appointment_id, db)
+    return AppointmentService.delete_ap(appointment_id, db, current_user)
 
 @router.patch("/complete/{appointment_id}", response_model=AppointmentSchemaResponse)
 def complete_appointment(appointment_id: int, db: Session = Depends(get_session), current_user: UserModel = Depends(allow_admin)):
-    return AppointmentService.complete_appointment(appointment_id, db)
+    return AppointmentService.complete_appointment(appointment_id, db, current_user)

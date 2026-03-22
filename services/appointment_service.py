@@ -4,15 +4,16 @@ from fastapi import HTTPException, status
 
 from schemas.appointment_schema import AppointmentSchemaBase
 from models.appointment_model import AppointmentModel
+from models.user_model import UserModel
 from services.doctor_service import DoctorService
 from services.patient_service import PatientService
 
 class AppointmentService:
     @staticmethod
-    def create_ap(appointment_data: AppointmentSchemaBase, db: Session):
+    def create_ap(appointment_data: AppointmentSchemaBase, db: Session, current_user: UserModel):
         #Cheking if Doctor and Patient exist
         DoctorService.get_doctor_by_id(appointment_data.doctor_id, db)
-        PatientService.get_patient_by_id(appointment_data.patient_id, db)
+        PatientService.get_patient_by_id(appointment_data.patient_id, db, current_user)
 
         #Prevent doble bookings
         query = select(AppointmentModel).where(AppointmentModel.ap_date == appointment_data.ap_date, AppointmentModel.ap_time == appointment_data.ap_time, (AppointmentModel.doctor_id == appointment_data.doctor_id) | (AppointmentModel.patient_id == appointment_data.patient_id), AppointmentModel.is_active == True)
@@ -28,25 +29,40 @@ class AppointmentService:
         return new_appointment
     
     @staticmethod
-    def get_ap_by_id(appointment_id: int, db: Session):
+    def get_ap_by_id(appointment_id: int, db: Session, current_user: UserModel):
         query = select(AppointmentModel).where(AppointmentModel.id == appointment_id)
         appointment = db.exec(query).first()
 
         if not appointment:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Appointment not found.")
 
+        if current_user.role == "patient" and appointment.patient_id != current_user.patient_profile.id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You can't access this datas.")
+        if current_user.role == "doctor" and appointment.doctor_id != current_user.doctor_profile.id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You can't access this datas.")
+
         return appointment
     
     @staticmethod
-    def get_all_ap(db: Session):
+    def get_all_ap(db: Session, current_user: UserModel):
         query = select(AppointmentModel)
-        appointments = db.exec(query).all()
 
+        if current_user.role == "patient":
+            if not current_user.patient_profile:
+                raise HTTPException(status_code=404, detail="Patient profile not found.")
+            query = query.where(AppointmentModel.patient_id == current_user.patient_profile.id)
+        
+        elif current_user.role == "doctor":
+            if not current_user.doctor_profile:
+                raise HTTPException(status_code=404, detail="Doctor profile not found.")
+            query = query.where(AppointmentModel.doctor_id == current_user.doctor_profile.id)
+        
+        appointments = db.exec(query).all()
         return appointments
     
     @staticmethod
-    def update_ap(appointment_id: int, appointment_data: AppointmentSchemaBase, db: Session):
-        appointment_up = AppointmentService.get_ap_by_id(appointment_id, db)
+    def update_ap(appointment_id: int, appointment_data: AppointmentSchemaBase, db: Session, current_user: UserModel):
+        appointment_up = AppointmentService.get_ap_by_id(appointment_id, db, current_user)
 
         appointment_data_dict = appointment_data.model_dump(exclude_unset=True)
         appointment_up.sqlmodel_update(appointment_data_dict)
@@ -57,8 +73,8 @@ class AppointmentService:
         return appointment_up
     
     @staticmethod
-    def delete_ap(appointment_id: int, db: Session):
-        appointment_up = AppointmentService.get_ap_by_id(appointment_id, db)
+    def delete_ap(appointment_id: int, db: Session, current_user: UserModel):
+        appointment_up = AppointmentService.get_ap_by_id(appointment_id, db, current_user)
 
         appointment_up.is_active = False
         db.commit()
@@ -66,8 +82,8 @@ class AppointmentService:
         return None
     
     @staticmethod
-    def complete_appointment(appointment_id: int, db: Session):
-        appointment = AppointmentService.get_ap_by_id(appointment_id, db)
+    def complete_appointment(appointment_id: int, db: Session, current_user: UserModel):
+        appointment = AppointmentService.get_ap_by_id(appointment_id, db, current_user)
         
         appointment.status = "Completed"
         db.add(appointment)
@@ -78,7 +94,7 @@ class AppointmentService:
     
     #Add this to the scheduling page to update.
     @staticmethod
-    def auto_complete_past_appointments(db: Session):
+    def auto_complete_past_appointments(db: Session, current_user: UserModel):
         now = datetime.now()
         query = select(AppointmentModel).where(
             AppointmentModel.status == "Pending",
